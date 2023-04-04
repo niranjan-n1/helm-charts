@@ -22,7 +22,33 @@ jobs:
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"    
-     
+          
+      - name: Install Helm
+        uses: helm/helm-install-action@v1.0.0
+
+      - name: Add Helm repos
+        working-directory: ./charts/container-storage-modules/
+        run: |
+          helm repo add jetstack https://charts.jetstack.io
+          helm repo add tanzu https://vmware-tanzu.github.io/helm-charts
+          helm repo add nginx-stable https://helm.nginx.com/stable
+          
+      - name: Build csm-app-mobility dependencies
+        working-directory: ./charts/csm-application-mobility/
+        run: helm dependency build
+      
+      - name: Build csm-app-mobility dependencies
+        working-directory: ./charts/csm-application-mobility/
+        run: helm dependency build
+
+      - name: Build karavi-observability dependencies
+        working-directory: ./charts/karavi-observability/
+        run: helm dependency build
+
+      - name: Build container-storage-modules dependencies
+        working-directory: ./charts/container-storage-modules/
+        run: helm dependency build
+
      # Run the helm chart release command
       - name: Run karavi chart-releaser
         uses: helm/chart-releaser-action@v1.0.0
